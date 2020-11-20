@@ -72,6 +72,15 @@ export default function ConfettiGenerator(params) {
     : document.getElementById(appstate.target);
   var ctx = cv.getContext("2d");
   var particles = [];
+  var anySvgToPreload = appstate.props.filter(function (t) { return t && t.type && t.type === 'svg' });
+  var preloadedSvgs = {};
+  if (anySvgToPreload) {
+    for (var i = 0; i < anySvgToPreload.length; i++) {
+      var preImg = new window.Image();
+      preImg.src = anySvgToPreload[i].src;
+      preloadedSvgs[anySvgToPreload[i].src] = preImg;
+    }
+  }
 
   //////////////
   // Random helper (to minimize typing)
@@ -159,8 +168,7 @@ export default function ConfettiGenerator(params) {
       }
       case 'svg': {
         ctx.save();
-        var image = new window.Image();
-        image.src = p.src;
+        var image = preloadedSvgs[p.src];
         var size = p.size || 15;
         ctx.translate(p.x + size / 2, p.y + size / 2);
         if(p.rotate)
